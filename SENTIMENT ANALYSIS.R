@@ -8,7 +8,7 @@ remD$open()
 remD$navigate("https://youtu.be/vpc_gnrRh8M?si=KRB7ymx3wCYU5FNr") #golden
 remD$navigate("https://youtu.be/4cbTQhFIagg?si=Rv1jTdaGIzdNzqjm") #희재
 remD$navigate("https://youtube.com/shorts/SHbYMsHitsU?si=st7oZOV65rUieBY1") #사결시
-remD$navigate("https://youtu.be/IRlXSNRAebM?si=5foAgFY0lZCy5qNC") #어사그
+remD$navigate("https://youtu.be/IRlXSNRAebM?si=5foAgFY0lZCy5qNC") #어떻게 사랑이 그래요
 remD$navigate('https://youtu.be/VkGRr9S4jlE?si=I-68SQ3WzZXwjwxD') #가슴아 가슴아
 remD$navigate('https://youtu.be/O2DR7zbMRys?si=CvnzoRlLwOdxj_If') #미운오리새끼
 remD$navigate('https://youtu.be/3REcll87Cls?si=S6tt_RqpVhcFhtq1') #사랑했지만
