@@ -5,7 +5,6 @@ library(RSelenium)
 #java -Dwebdriver.gecko.driver=”geckodriver.exe” -jar selenium-server-standalone-4.0.0-alpha-1.jar -port 4445
 remD <- remoteDriver(remoteServerAddr = 'localhost', port = 4445L, browserName = 'chrome')
 remD$open()
-remD$navigate("https://www.youtube.com/watch?v=a4Pt6VAF3Eo&t=243s") #해당 홈페이지(영상)로 이동
 remD$navigate("https://youtu.be/vpc_gnrRh8M?si=KRB7ymx3wCYU5FNr") #golden
 remD$navigate("https://youtu.be/4cbTQhFIagg?si=Rv1jTdaGIzdNzqjm") #희재
 remD$navigate("https://youtube.com/shorts/SHbYMsHitsU?si=st7oZOV65rUieBY1") #사결시
@@ -19,10 +18,6 @@ remD$navigate('https://youtu.be/K9o1z-DvfEA?si=ZxfaZYx6uepeczsn') #Ready
 
 
 #홈페이지 스크롤
-remD$executeScript("window.scrollTo(0, 500)")
-remD$executeScript("window.scrollTo(500, 1000)")
-remD$executeScript("window.scrollTo(1000, 1500)")
-
 prev_height <- remD$executeScript('return document.documentElement.scrollHeight')
 
 while (TRUE) {
@@ -117,15 +112,6 @@ validated_comments %>%
 #부정 문장 확인
 validated_comments %>%
   filter(sentiment == 1) %>%
-  select(comment_id, total_score, value) %>%
-  arrange(total_score)
-
-youtube_comments %>%
-  left_join(dic, by = 'word') %>%
-  mutate(score = ifelse(is.na(score), 0, score)) %>%
-  group_by(comment_id, value) %>%
-  summarise(total_score = sum(score)) %>%
-  ungroup() %>%
   select(comment_id, total_score, value) %>%
   arrange(total_score)
 
