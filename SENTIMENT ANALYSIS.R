@@ -115,18 +115,8 @@ validated_comments %>%
   select(comment_id, total_score, value) %>%
   arrange(total_score)
 
-#영상별 부정 댓글 개수
-youtube_comments %>%
-  left_join(dic, by = 'word') %>%
-  mutate(score = ifelse(is.na(score), 0, score)) %>%
-  group_by(comment_id) %>%
-  summarise(sentiment = sum(score)) %>%
-  mutate(sentiment = ifelse(sentiment < 0, 1, 0)) %>%
-  group_by(sentiment) %>%
-  count()
-
 #마스터 데이터셋 구축
-video_data <- data.frame(
+youtube_data <- data.frame(
   video_id   = c("v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"),
   is_cover   = c(1, 1, 1, 1, 0, 0, 1, 1, 1, 0),
   is_shorts  = c(0, 0, 1, 0, 0, 0, 0, 0, 1, 0),
@@ -138,13 +128,13 @@ video_data <- data.frame(
 )
 
 #데이터 확인(EDA)
-head(youtube_comments)
-str(youtube_comments)
-summary(youtube_comments)
+head(youtube_data)
+str(youtube_data)
+summary(youtube_data)
 
 #로지스틱 회귀분석
 logit_model <- glm(
   cbind(n_negative, n_total - n_negative) ~ is_cover + is_shorts + comp_low + comp_mid + comp_high,
   family = binomial,
-  data = video_data)
+  data = youtube_data)
 summary(logit_model)
