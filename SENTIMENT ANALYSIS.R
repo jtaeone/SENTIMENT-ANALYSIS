@@ -132,6 +132,49 @@ head(youtube_data)
 str(youtube_data)
 summary(youtube_data)
 
+#영상 형식별 부정 댓글 비율
+eda_shorts <- youtube_data %>%
+  group_by(is_shorts) %>%
+  summarise(
+    total_replies = sum(n_total),
+    negative_replies = sum(n_negative),
+    neg_ratio = (negative_replies / total_replies) * 100)
+eda_shorts
+
+#경쟁성에 따른 부정 댓글 비율
+eda_comp <- youtube_data %>%
+  mutate(
+    comp_level = case_when(
+      comp_high == 1 ~ "High",
+      comp_mid == 1  ~ "Mid",
+      comp_low == 1  ~ "Low",
+      TRUE           ~ "Not program"
+    )
+  ) %>%
+  group_by(comp_level) %>%
+  summarise(
+    total_replies = sum(n_total),
+    negative_replies = sum(n_negative),
+    neg_ratio = (negative_replies / total_replies) * 100
+  ) %>%
+  mutate(comp_level = factor(comp_level, levels = c("Not program", "Low", "Mid", "High"))) %>%
+  arrange(comp_level)
+eda_comp
+
+#경쟁성에 따른 부정 댓글 비율 시각화
+library(ggplot2)
+ggplot(eda_comp, aes(x = comp_level, y = neg_ratio, fill = comp_level)) +
+  geom_bar(stat = "identity", width = 0.5, show.legend = FALSE) +
+  geom_text(aes(label = paste0(round(neg_ratio, 1), "%")), vjust = -0.5, fontface = "bold") +
+  scale_fill_manual(values = c("Baseline" = "#777777", "Low" = "#daffde", "Mid" = "#bbf0bc", "High" = "#deff9a")) +
+  labs(
+    title = "무대 경쟁 강도에 따른 부정적 여론 형성 비율",
+    subtitle = "경쟁 강도가 높아질수록 댓글 내 부정 반응 비율이 계단식으로 우상향하는 경향 확인",
+    x = "콘텐츠 내 경쟁 강도 (더미 그룹)",
+    y = "부정 댓글 비율 (%)"
+  ) +
+  theme_minimal(base_family = "NanumGothic")
+
 #로지스틱 회귀분석
 logit_model <- glm(
   cbind(n_negative, n_total - n_negative) ~ is_cover + is_shorts + comp_low + comp_mid + comp_high,
