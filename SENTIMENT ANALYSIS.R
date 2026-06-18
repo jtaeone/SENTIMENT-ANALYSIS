@@ -174,7 +174,7 @@ ggplot(eda_comp, aes(x = comp_level, y = neg_ratio, fill = comp_level)) +
     y = "부정 댓글 비율 (%)"
   ) +
   theme_minimal(base_family = "NanumGothic")
-<img width="865" height="542" alt="Image" src="https://github.com/user-attachments/assets/4db12253-87bd-4b1a-9a65-0afdd9321119" />
+!(https://github.com/user-attachments/assets/4db12253-87bd-4b1a-9a65-0afdd9321119)
 
 #로지스틱 회귀분석
 logit_model <- glm(
