@@ -16,8 +16,6 @@ remD$navigate('https://youtu.be/f4cVKpK2YIY?si=Yh831rvbmm516sT7') #꿈에
 remD$navigate('https://youtube.com/shorts/Mj9f1w3o5fI?si=x_wXXTKPtAjj0ebS') #말리꽃
 remD$navigate('https://youtu.be/K9o1z-DvfEA?si=ZxfaZYx6uepeczsn') #Ready
 
-
-#홈페이지 스크롤
 prev_height <- remD$executeScript('return document.documentElement.scrollHeight')
 
 while (TRUE) {
@@ -174,7 +172,7 @@ ggplot(eda_comp, aes(x = comp_level, y = neg_ratio, fill = comp_level)) +
     y = "부정 댓글 비율 (%)"
   ) +
   theme_minimal(base_family = "NanumGothic")
-!(https://github.com/user-attachments/assets/4db12253-87bd-4b1a-9a65-0afdd9321119)
+# 이미지 링크 - https://github.com/user-attachments/assets/4db12253-87bd-4b1a-9a65-0afdd9321119
 
 #로지스틱 회귀분석
 logit_model <- glm(
