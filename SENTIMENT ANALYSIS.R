@@ -1,20 +1,20 @@
-#댓글 크롤링
+# 댓글 크롤링
 library(rvest)
 library(RSelenium)
 #cd C:\Rselenium
 #java -Dwebdriver.gecko.driver=”geckodriver.exe” -jar selenium-server-standalone-4.0.0-alpha-1.jar -port 4445
 remD <- remoteDriver(remoteServerAddr = 'localhost', port = 4445L, browserName = 'chrome')
 remD$open()
-remD$navigate("https://youtu.be/vpc_gnrRh8M?si=KRB7ymx3wCYU5FNr") #golden
-remD$navigate("https://youtu.be/4cbTQhFIagg?si=Rv1jTdaGIzdNzqjm") #희재
-remD$navigate("https://youtube.com/shorts/SHbYMsHitsU?si=st7oZOV65rUieBY1") #사결시
-remD$navigate("https://youtu.be/IRlXSNRAebM?si=5foAgFY0lZCy5qNC") #어떻게 사랑이 그래요
-remD$navigate('https://youtu.be/VkGRr9S4jlE?si=I-68SQ3WzZXwjwxD') #가슴아 가슴아
-remD$navigate('https://youtu.be/O2DR7zbMRys?si=CvnzoRlLwOdxj_If') #미운오리새끼
-remD$navigate('https://youtu.be/3REcll87Cls?si=S6tt_RqpVhcFhtq1') #사랑했지만
-remD$navigate('https://youtu.be/f4cVKpK2YIY?si=Yh831rvbmm516sT7') #꿈에
-remD$navigate('https://youtube.com/shorts/Mj9f1w3o5fI?si=x_wXXTKPtAjj0ebS') #말리꽃
-remD$navigate('https://youtu.be/K9o1z-DvfEA?si=ZxfaZYx6uepeczsn') #Ready
+remD$navigate("https://youtu.be/vpc_gnrRh8M?si=KRB7ymx3wCYU5FNr") # golden
+remD$navigate("https://youtu.be/4cbTQhFIagg?si=Rv1jTdaGIzdNzqjm") # 희재
+remD$navigate("https://youtube.com/shorts/SHbYMsHitsU?si=st7oZOV65rUieBY1") # 사랑, 결코 시들지 않는...
+remD$navigate("https://youtu.be/IRlXSNRAebM?si=5foAgFY0lZCy5qNC") # 어떻게 사랑이 그래요
+remD$navigate('https://youtu.be/VkGRr9S4jlE?si=I-68SQ3WzZXwjwxD') # 가슴아 가슴아
+remD$navigate('https://youtu.be/O2DR7zbMRys?si=CvnzoRlLwOdxj_If') # 미운오리새끼
+remD$navigate('https://youtu.be/3REcll87Cls?si=S6tt_RqpVhcFhtq1') # 사랑했지만
+remD$navigate('https://youtu.be/f4cVKpK2YIY?si=Yh831rvbmm516sT7') # 꿈에
+remD$navigate('https://youtube.com/shorts/Mj9f1w3o5fI?si=x_wXXTKPtAjj0ebS') # 말리꽃
+remD$navigate('https://youtu.be/K9o1z-DvfEA?si=ZxfaZYx6uepeczsn') # Ready
 
 prev_height <- remD$executeScript('return document.documentElement.scrollHeight')
 
@@ -30,15 +30,15 @@ while (TRUE) {
 }
 
 html<-remD$getPageSource()[[1]]
-html<-read_html(html) #페이지 소스 읽어오기
+html<-read_html(html) # 페이지 소스 읽어오기
 
 youtube_comments <- html %>% html_nodes("#content-text") %>%
-  html_text() #선택된 노드를 텍스트화
+  html_text() # 선택된 노드를 텍스트화
 youtube_comments <- youtube_comments[1:300]
 head(youtube_comments)
 youtube_comments
 
-#텍스트 전처리
+# 텍스트 전처리
 library(dplyr)
 library(stringr)
 library(tidytext)
@@ -47,12 +47,12 @@ youtube_comments <- gsub("\n", "", youtube_comments) #특정 문자를 원하는
 youtube_comments <- trimws(youtube_comments) #공백 제거
 youtube_comments
 
-youtube_comments <- youtube_comments %>% str_replace_all('[^가-힣]', ' ') %>% #한글이 아닌 모든 글자를 공백 처리 
+youtube_comments <- youtube_comments %>% str_replace_all('[^가-힣]', ' ') %>% # 한글이 아닌 모든 글자를 공백 처리 
   str_squish() %>% #연속된 공백 제거(공백 최대 1개)
   as_tibble()
 youtube_comments
 
-#원본 댓글 파일 저장 - 댓글 데이터 소실 방지
+# 원본 댓글 파일 저장 - 댓글 데이터 소실 방지
 write.table(youtube_comments,
             file="son2.txt",
             sep=",",
@@ -63,16 +63,16 @@ write.csv(youtube_comments,
 
 youtube_comments <- youtube_comments %>%
   mutate(comment_id = row_number()) %>%
-  unnest_tokens(input = value, output = word, token = "words", drop = F) #문장을 단어 기준으로 쪼개기
+  unnest_tokens(input = value, output = word, token = "words", drop = F) # 문장을 단어 기준으로 쪼개기
 youtube_comments
 
-#감성 사전 구축
+# 감성 사전 구축
 dic <- read_delim('SentiWord_Dict.txt',
                   delim = '\t',
                   col_names = c('word', 'score'))
 dic
 
-#감성 사전 보정 및 감성 라벨링 - 부정확한 맥락 파악으로 인한 감정 오분류를 막기 위함
+# 감성 사전 보정 및 감성 라벨링 - 부정확한 맥락 파악으로 인한 감정 오분류를 막기 위함
 dic <- dic %>%
   filter(!word %in% c("미친", "슬픈", "소름", "일부러", "눈물", "슬픔"))
 
@@ -102,18 +102,18 @@ validated_comments <- youtube_comments %>%
     )
   )
   
-#영상별 부정 댓글 개수
+# 영상별 부정 댓글 개수
 validated_comments %>%
   group_by(sentiment) %>%
   count()
 
-#부정 문장 확인
+# 부정 문장 확인
 validated_comments %>%
   filter(sentiment == 1) %>%
   select(comment_id, total_score, value) %>%
   arrange(total_score)
 
-#마스터 데이터셋 구축
+# 마스터 데이터셋 구축
 youtube_data <- data.frame(
   video_id   = c("v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"),
   is_cover   = c(1, 1, 1, 1, 0, 0, 1, 1, 1, 0),
@@ -125,12 +125,12 @@ youtube_data <- data.frame(
   n_total = c(282, 294, 295, 288, 85, 64, 260, 274, 181, 261)
 )
 
-#데이터 확인(EDA)
+# 데이터 확인(EDA)
 head(youtube_data)
 str(youtube_data)
 summary(youtube_data)
 
-#영상 형식별 부정 댓글 비율
+# 영상 형식별 부정 댓글 비율
 eda_shorts <- youtube_data %>%
   group_by(is_shorts) %>%
   summarise(
@@ -139,7 +139,7 @@ eda_shorts <- youtube_data %>%
     neg_ratio = (negative_replies / total_replies) * 100)
 eda_shorts
 
-#경쟁성에 따른 부정 댓글 비율
+# 경쟁성에 따른 부정 댓글 비율
 eda_comp <- youtube_data %>%
   mutate(
     comp_level = case_when(
@@ -159,7 +159,7 @@ eda_comp <- youtube_data %>%
   arrange(comp_level)
 eda_comp
 
-#경쟁성에 따른 부정 댓글 비율 시각화
+# 경쟁성에 따른 부정 댓글 비율 시각화
 library(ggplot2)
 ggplot(eda_comp, aes(x = comp_level, y = neg_ratio, fill = comp_level)) +
   geom_bar(stat = "identity", width = 0.5, show.legend = FALSE) +
@@ -174,7 +174,7 @@ ggplot(eda_comp, aes(x = comp_level, y = neg_ratio, fill = comp_level)) +
   theme_minimal(base_family = "NanumGothic")
 # 이미지 링크 - https://github.com/user-attachments/assets/4db12253-87bd-4b1a-9a65-0afdd9321119
 
-#로지스틱 회귀분석
+# 로지스틱 회귀분석
 logit_model <- glm(
   cbind(n_negative, n_total - n_negative) ~ is_cover + is_shorts + comp_low + comp_mid + comp_high,
   family = binomial,
